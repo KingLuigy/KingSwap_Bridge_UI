@@ -1,0 +1,25 @@
+import styled from "styled-components";
+import { Button } from "@material-ui/core";
+export const KingButton = styled(Button)`
+  padding: 18px;
+  width: 100%;
+  text-align: center;
+  border-radius: 20px !important;
+  outline: none;
+  border: 1px solid transparent !important;
+  text-decoration: none;
+  display: flex;
+  -webkit-box-pack: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  -webkit-box-align: center;
+  align-items: center;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+  background-color: rgba(21, 61, 111, 0.44) !important;
+  color: rgb(109, 168, 255) !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  font-family: PoppinsLight !important;
+`;
