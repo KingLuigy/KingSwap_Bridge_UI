@@ -14,6 +14,7 @@ const useAllowance = (selectedTokenData: TokensData) => {
   const bridgeAddress: string | null = getBridgeNetworkAddress(
     selectedTokenData
   );
+  
   const lpContract = ethersProvider
     ? getContract(ethersProvider, address)
     : null;

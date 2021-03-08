@@ -12,6 +12,12 @@ import { getBridgeNetwork, getNetworkLabel } from "../../utils/helpers";
 import { transferTokens } from "../../utils/bridge";
 import useAllowance from "../../hooks/useAllowance";
 import { HOME_NETWORK, tokensData } from "../../config/constant";
+import BigNumber from 'bignumber.js'
+
+BigNumber.config({
+  EXPONENTIAL_AT: 1000,
+  DECIMAL_PLACES: 80,
+})
 
 const Home: React.FC = () => {
   const { account, providerChainId: chainId, ethersProvider } = useContext(
@@ -53,7 +59,7 @@ const Home: React.FC = () => {
           ethersProvider,
           tokensData.filter((x) => x.index === token)[0],
           account,
-          amountToTransfer
+          new BigNumber(amountToTransfer).times(new BigNumber(10).pow(18)).toString()
         );
         // user rejected tx or didn't go thru
         if (!txHash) {

@@ -5,6 +5,7 @@ import {
   BRIDGED_TOKEN_ADDRESS,
   BRIDGED_OLD_TOKEN_ADDRESS,
   TokensData,
+  tokensData,
 } from "../config/constant";
 
 export const getNetworkName = (chainId: number) =>
@@ -31,18 +32,18 @@ export const getBridgeNetwork = (chainId: number) => {
 };
 
 export const getBridgeNetworkAddress = (selectedTokenData: TokensData) => {
-  switch (selectedTokenData.index) {
-    // mainnet $king to $xking
-    //  xdai x$king to $king
-    case 0:
-    case 2:
-      return BRIDGED_TOKEN_ADDRESS[selectedTokenData.chainId];
+  // switch (selectedTokenData.index) {
+  //   // mainnet $king to $xking
+  //   //  xdai x$king to $king
+  //   case 0:
+  //   case 2:
+      return BRIDGED_TOKEN_ADDRESS[1];
     // mainnet old $king to $xoking
     // xdai $xoking to old $king
-    case 1:
-    case 3:
-      return BRIDGED_OLD_TOKEN_ADDRESS[selectedTokenData.chainId];
-    default:
-      return null;
-  }
+  //   case 1:
+  //   case 3:
+  //     return BRIDGED_OLD_TOKEN_ADDRESS[selectedTokenData.chainId];
+  //   default:
+  //     return null;
+  // }
 };
