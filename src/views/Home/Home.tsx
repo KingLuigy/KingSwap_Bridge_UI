@@ -1,4 +1,5 @@
 import React, { useContext, useState, useCallback, useEffect } from "react";
+import { BigNumber, ethers } from "ethers";
 import MenuItem from "@material-ui/core/MenuItem";
 import { Web3Context } from "../../contexts/Web3Context";
 import ConnectWeb3 from "../../components/ConnectWeb3";
@@ -16,13 +17,8 @@ import {
 import { transferTokens } from "../../utils/bridge";
 import useAllowance from "../../hooks/useAllowance";
 import { HOME_NETWORK, tokensData } from "../../config/constant";
-import BigNumber from "bignumber.js";
 import useBalance from "../../hooks/useBalance";
-
-BigNumber.config({
-  EXPONENTIAL_AT: 1000,
-  DECIMAL_PLACES: 80,
-});
+import KLoading from "../../components/KLoading";
 
 const Home: React.FC = () => {
   const { account, providerChainId: chainId, ethersProvider } = useContext(
@@ -34,12 +30,19 @@ const Home: React.FC = () => {
   );
   const [token, setToken] = useState(filteredTokensData[0]?.index || 0);
   const [amountToTransfer, setAmountToTransfer] = useState(0);
+  const [allowed, setAllowed] = useState(true);
   const [requestedAllowance, setRequestedAllowance] = useState(false);
-  const { allowance, onAllow } = useAllowance(tokensData[token]);
   const selectedTokenDetail = tokensData.filter((x) => x.index === token)[0];
   const targetTokenDetail = tokensData.filter(
     (x) => x.index === selectedTokenDetail?.targetIndex
   )[0];
+  const { allowance, onAllow } = useAllowance(selectedTokenDetail);
+  const amount = selectedTokenDetail
+    ? ethers.utils.parseUnits(
+        amountToTransfer.toString(),
+        selectedTokenDetail?.decimal
+      )
+    : BigNumber.from(0);
   const { fromBalance, toBalance, loading } = useBalance(
     selectedTokenDetail,
     targetTokenDetail
@@ -50,17 +53,19 @@ const Home: React.FC = () => {
     chainId &&
     [HOME_NETWORK, getBridgeNetwork(HOME_NETWORK)].indexOf(chainId) >= 0;
 
+  useEffect(() => {
+    setAllowed(allowance.gte(amount) && fromBalance.gte(amount));
+  }, [amountToTransfer, allowance]);
+
   const handleAllowance = useCallback(async () => {
     try {
       setRequestedAllowance(true);
-      const txHash = await onAllow();
-      // user rejected tx or didn't go thru
-      if (!txHash) {
-        setRequestedAllowance(false);
-      }
+      const tx = await onAllow();
+      await tx.wait();
     } catch (e) {
-      setRequestedAllowance(false);
       console.log(e);
+    } finally {
+      setRequestedTransfer(false);
     }
   }, [onAllow]);
 
@@ -68,21 +73,17 @@ const Home: React.FC = () => {
     if (ethersProvider) {
       try {
         setRequestedTransfer(true);
-        const txHash = await transferTokens(
+        const tx = await transferTokens(
           ethersProvider,
-          tokensData.filter((x) => x.index === token)[0],
+          selectedTokenDetail,
           account,
-          new BigNumber(amountToTransfer)
-            .times(new BigNumber(10).pow(18))
-            .toString()
+          amount
         );
-        // user rejected tx or didn't go thru
-        if (!txHash) {
-          setRequestedTransfer(false);
-        }
+        await tx.wait();
       } catch (e) {
-        setRequestedTransfer(false);
         console.log(e);
+      } finally {
+        setRequestedTransfer(false);
       }
     }
   }, [account, amountToTransfer, ethersProvider, token]);
@@ -93,6 +94,7 @@ const Home: React.FC = () => {
 
   const handleChange = (selectedValue: string) => {
     setToken(parseInt(selectedValue));
+    setAmountToTransfer(0);
   };
 
   const renderMenuItem = () => {
@@ -108,12 +110,14 @@ const Home: React.FC = () => {
   };
 
   const renderTransactionButton = () => {
-    return (
+    return requestedTransfer || requestedAllowance ? (
+      <KLoading progressLabel="Processing..." />
+    ) : (
       <KButton
-        label={allowance?.gte(0) ? "Transfer" : "Approve"}
-        disabled={requestedAllowance || requestedTransfer}
+        label={allowance?.gt(0) ? "Transfer" : "Approve"}
+        disabled={requestedTransfer || requestedAllowance || !allowed}
         onButtonClick={() =>
-          allowance?.gte(0) ? handleTransfer() : handleAllowance()
+          allowance?.gt(0) ? handleTransfer() : handleAllowance()
         }
       />
     );

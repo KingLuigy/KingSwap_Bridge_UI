@@ -4,11 +4,11 @@ interface BridgeAddress {
 
 export const BRIDGED_TOKEN_ADDRESS: BridgeAddress = {
   1: "0xD1843507c588e5D0e11413b29779cC97E14e0242", // mainnet bridge for new King to xKing
-  100: "0x4EdC94bC630Ee57A7D3FFeDaa03498430B7353ED", //xdai bridge for xKing to new King
+  100: "0x4c9c971fbEFc93E0900988383DC050632dEeC71E", //xdai bridge for xKing to new King
 };
 export const BRIDGED_OLD_TOKEN_ADDRESS: BridgeAddress = {
   1: "0x24DD13C6b54E1538061FE8cda14E0C7F27BE9363", // mainnet bridge for old King to xoKing
-  100: "0x4c9c971fbEFc93E0900988383DC050632dEeC71E", //xdai Bridge for xoKing to Old King
+  100: "0x4EdC94bC630Ee57A7D3FFeDaa03498430B7353ED", //xdai Bridge for xoKing to Old King
 };
 
 interface NetworkNamePros {
