@@ -58,6 +58,7 @@ export interface TokensData {
   symbol: string;
   targetIndex: number;
   chainId: number;
+  decimal: number;
 }
 export const tokensData: TokensData[] = [
   {
@@ -66,6 +67,7 @@ export const tokensData: TokensData[] = [
     address: "0xd2057d71fe3f5b0dc1e3e7722940e1908fc72078",
     targetIndex: 2,
     chainId: 1,
+    decimal: 18,
   },
   {
     index: 1,
@@ -73,6 +75,7 @@ export const tokensData: TokensData[] = [
     address: "0x5a731151d6510Eb475cc7a0072200cFfC9a3bFe5",
     targetIndex: 3,
     chainId: 1,
+    decimal: 18,
   },
   {
     index: 2,
@@ -80,6 +83,7 @@ export const tokensData: TokensData[] = [
     address: "0xcCd05d20Cc7f1994425Dd21A8939A222D433cD1C",
     targetIndex: 0,
     chainId: 100,
+    decimal: 18,
   },
   {
     index: 3,
@@ -87,6 +91,7 @@ export const tokensData: TokensData[] = [
     address: "0x27dc94013361e787d36134CA415688DD518AdE1c",
     targetIndex: 1,
     chainId: 100,
+    decimal: 18,
   },
 ];
 

@@ -3,7 +3,7 @@ import { Props } from "./props";
 import {
   KingTextField,
   KingTextBox,
-  StyledContent,
+  StyledTitle,
   StyledLabel,
   StyledInputContainer,
   StyledSelect,
@@ -12,6 +12,7 @@ import {
 const KTextBox: React.FC<Props> = (props) => {
   const {
     label,
+    rightLabel,
     value,
     disabled,
     selectedValue,
@@ -23,9 +24,12 @@ const KTextBox: React.FC<Props> = (props) => {
   // ======================= VIEWS
   return (
     <KingTextBox>
-      <StyledContent>
+      <StyledTitle>
         <StyledLabel>{label}</StyledLabel>
-      </StyledContent>
+        {rightLabel && (
+          <StyledLabel className="rightlabel">{rightLabel}</StyledLabel>
+        )}
+      </StyledTitle>
       <StyledInputContainer>
         <KingTextField
           value={value}

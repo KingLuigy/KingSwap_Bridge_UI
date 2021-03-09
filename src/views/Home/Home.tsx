@@ -8,16 +8,21 @@ import CardContent from "../../components/CardContent";
 import KTextBox from "../../components/KTextBox";
 import CardItem from "../../components/CardItem";
 import KButton from "../../components/KButton";
-import { getBridgeNetwork, getNetworkLabel } from "../../utils/helpers";
+import {
+  formatValue,
+  getBridgeNetwork,
+  getNetworkLabel,
+} from "../../utils/helpers";
 import { transferTokens } from "../../utils/bridge";
 import useAllowance from "../../hooks/useAllowance";
 import { HOME_NETWORK, tokensData } from "../../config/constant";
-import BigNumber from 'bignumber.js'
+import BigNumber from "bignumber.js";
+import useBalance from "../../hooks/useBalance";
 
 BigNumber.config({
   EXPONENTIAL_AT: 1000,
   DECIMAL_PLACES: 80,
-})
+});
 
 const Home: React.FC = () => {
   const { account, providerChainId: chainId, ethersProvider } = useContext(
@@ -31,9 +36,17 @@ const Home: React.FC = () => {
   const [amountToTransfer, setAmountToTransfer] = useState(0);
   const [requestedAllowance, setRequestedAllowance] = useState(false);
   const { allowance, onAllow } = useAllowance(tokensData[token]);
+  const selectedTokenDetail = tokensData.filter((x) => x.index === token)[0];
+  const targetTokenDetail = tokensData.filter(
+    (x) => x.index === selectedTokenDetail?.targetIndex
+  )[0];
+  const { fromBalance, toBalance, loading } = useBalance(
+    selectedTokenDetail,
+    targetTokenDetail
+  );
   const [requestedTransfer, setRequestedTransfer] = useState(false);
   const valid =
-    !!account &&
+    account !== "" &&
     chainId &&
     [HOME_NETWORK, getBridgeNetwork(HOME_NETWORK)].indexOf(chainId) >= 0;
 
@@ -59,7 +72,9 @@ const Home: React.FC = () => {
           ethersProvider,
           tokensData.filter((x) => x.index === token)[0],
           account,
-          new BigNumber(amountToTransfer).times(new BigNumber(10).pow(18)).toString()
+          new BigNumber(amountToTransfer)
+            .times(new BigNumber(10).pow(18))
+            .toString()
         );
         // user rejected tx or didn't go thru
         if (!txHash) {
@@ -125,6 +140,11 @@ const Home: React.FC = () => {
                     selectedValue={token.toString()}
                     onSelectedValueChange={handleChange}
                     renderMenuItem={renderMenuItem}
+                    rightLabel={
+                      selectedTokenDetail && !loading
+                        ? formatValue(fromBalance, selectedTokenDetail.decimal)
+                        : ""
+                    }
                   />
                   {renderTransactionButton()}
                   <KTextBox
@@ -139,6 +159,11 @@ const Home: React.FC = () => {
                       ?.targetIndex.toString()}
                     onSelectedValueChange={handleChange}
                     renderMenuItem={renderTartgetMenuItem}
+                    rightLabel={
+                      targetTokenDetail && !loading
+                        ? formatValue(toBalance, targetTokenDetail.decimal)
+                        : ""
+                    }
                   />
                 </>
               )}

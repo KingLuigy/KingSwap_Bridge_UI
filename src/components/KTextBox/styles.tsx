@@ -10,7 +10,7 @@ export const KingTextBox = styled.div`
   z-index: 1;
 `;
 
-export const StyledContent = styled.div`
+export const StyledTitle = styled.div`
   display: flex;
   flex-flow: row nowrap;
   -webkit-box-align: center;
@@ -37,14 +37,16 @@ export const StyledLabel = styled.div`
   width: 100%;
   display: flex;
   padding: 0px;
-  -webkit-box-align: center;
   align-items: center;
-  -webkit-box-pack: justify;
-  justify-content: space-between;
   font-weight: 500;
   font-family: PoppinsLight;
   font-size: 14px;
   color: rgb(195, 197, 203);
+
+  &.rightlabel {
+    display: block;
+    text-align: right;
+  }
 `;
 
 export const KingTextField = withStyles(() =>

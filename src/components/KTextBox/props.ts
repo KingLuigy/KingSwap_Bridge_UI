@@ -2,6 +2,7 @@ import React from "react";
 
 export interface Props {
   label: string;
+  rightLabel?: string;
   value: string;
   selectedValue: string;
   disabled?: boolean;

@@ -24,6 +24,13 @@ export const getContract = (
   return new ethers.Contract(address, ERC20, provider.getSigner());
 };
 
+export const getStaticContract = (
+  provider: ethers.providers.StaticJsonRpcProvider,
+  address: string
+) => {
+  return new ethers.Contract(address, ERC20, provider);
+};
+
 export const getAllowance = async (
   contract: ethers.Contract,
   owner: string,
