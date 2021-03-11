@@ -98,14 +98,14 @@ const Home: React.FC = () => {
   };
 
   const renderMenuItem = () => {
-    return filteredTokensData.map((item) => (
-      <MenuItem value={item.index}>{item.symbol}</MenuItem>
+    return filteredTokensData.map((item,index) => (
+      <MenuItem key={index} value={item.index}>{item.symbol}</MenuItem>
     ));
   };
 
   const renderTartgetMenuItem = () => {
-    return filteredTargetTokensData.map((item) => (
-      <MenuItem value={item.index}>{item.symbol}</MenuItem>
+    return filteredTargetTokensData.map((item, index) => (
+      <MenuItem key={index} value={item.index}>{item.symbol}</MenuItem>
     ));
   };
 
@@ -124,6 +124,7 @@ const Home: React.FC = () => {
   };
 
   const handleAmountChange = (amount: string) => {
+    if(amount.length>=21) return;
     setAmountToTransfer(parseInt(amount !== "" ? amount : "0"));
   };
 
@@ -134,7 +135,7 @@ const Home: React.FC = () => {
       ) : (
         <Card>
           <CardContent>
-            <CardItem>
+            <CardItem >
               {chainId && (
                 <>
                   <KTextBox
