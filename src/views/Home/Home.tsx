@@ -54,6 +54,11 @@ const Home: React.FC = () => {
     [HOME_NETWORK, getBridgeNetwork(HOME_NETWORK)].indexOf(chainId) >= 0;
 
   useEffect(() => {
+    console.log('allowance.gte(amount) && fromBalance.gte(amount) = ', allowance.gte(amount) && fromBalance.gte(amount))
+    console.log('allowance.gte(amount) = ' , allowance.gte(amount))
+    console.log('fromBalance.gte(amount) = ', fromBalance.gte(amount))
+    console.log('amount = ', amount)
+    console.log('allowance = ', allowance)
     setAllowed(allowance.gte(amount) && fromBalance.gte(amount));
   }, [amountToTransfer, allowance]);
 
@@ -110,14 +115,19 @@ const Home: React.FC = () => {
   };
 
   const renderTransactionButton = () => {
+    console.log('requestedTransfer = ', requestedTransfer)
+    console.log('requestedAllowance = ', requestedAllowance)
+    console.log('allowed = ', allowed)
     return requestedTransfer || requestedAllowance ? (
       <KLoading progressLabel="Processing..." />
     ) : (
       <KButton
         label={allowance?.gt(0) ? "Transfer" : "Approve"}
-        disabled={requestedTransfer || requestedAllowance || !allowed}
-        onButtonClick={() =>
+        disabled={requestedTransfer || requestedAllowance || allowed}
+        onButtonClick={() => {
+          alert("click")
           allowance?.gt(0) ? handleTransfer() : handleAllowance()
+        }
         }
       />
     );

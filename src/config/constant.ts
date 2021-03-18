@@ -44,7 +44,7 @@ export const chainUrls: ChainUrlsPros = {
     name: networkNames[100],
   },
   1: {
-    rpc: `https://mainnet.infura.io/v3/36991703b07245dca41f43e320e61c62`,
+    rpc: `https://mainnet.infura.io/v3/7fd31fc217914b188e05e97a63849bf4`,
     explorer: "https://blockscout.com/eth/mainnet",
     monitor: "https://alm-xdai.herokuapp.com",
     chainId: 1,
