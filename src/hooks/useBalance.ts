@@ -30,7 +30,7 @@ const useBalance = (
       : null;
 
   const fetchBalance = useCallback(async () => {
-    if (account && fromContract && toContract) {
+    if (account && fromContract && toContract && providerChainId) {
       setLoading(true);
       const fromBalance = await getBalance(fromContract, account);
       const toBalance = await getBalance(toContract, account);
@@ -38,13 +38,13 @@ const useBalance = (
       setToBalance(toBalance);
       setLoading(false);
     }
-  }, [account, fromContract, toContract]);
+  }, [account, providerChainId, fromContract, toContract]);
 
   useEffect(() => {
     fetchBalance();
-    let refreshInterval = setInterval(fetchBalance, 100000);
+    let refreshInterval = setInterval(fetchBalance, 10000000);
     return () => clearInterval(refreshInterval);
-  }, [tokenDetail, account, providerChainId]);
+  }, [tokenDetail, account]);
 
   return { fromBalance, toBalance, loading };
 };

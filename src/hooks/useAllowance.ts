@@ -18,17 +18,17 @@ const useAllowance = (selectedTokenData: TokensData) => {
     ethersProvider && address ? getContract(ethersProvider, address) : null;
 
   const fetchAllowance = useCallback(async () => {
-    if (lpContract && bridgeAddress && account) {
+    if (lpContract && bridgeAddress && account && providerChainId) {
       const allowance = await getAllowance(lpContract, account, bridgeAddress);
       if (allowance) setAllowance(allowance);
     }
-  }, [account, lpContract, bridgeAddress]);
+  }, [account, providerChainId, lpContract, bridgeAddress]);
 
   useEffect(() => {
     fetchAllowance();
-    let refreshInterval = setInterval(fetchAllowance, 100000);
+    let refreshInterval = setInterval(fetchAllowance, 10000000);
     return () => clearInterval(refreshInterval);
-  }, [selectedTokenData, account, providerChainId]);
+  }, [selectedTokenData, account]);
 
   const handleAllow = useCallback(async () => {
     if (lpContract && bridgeAddress) {
