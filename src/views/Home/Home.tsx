@@ -54,13 +54,10 @@ const Home: React.FC = () => {
     [HOME_NETWORK, getBridgeNetwork(HOME_NETWORK)].indexOf(chainId) >= 0;
 
   useEffect(() => {
-    console.log('allowance.gte(amount) && fromBalance.gte(amount) = ', allowance.gte(amount) && fromBalance.gte(amount))
-    console.log('allowance.gte(amount) = ' , allowance.gte(amount))
-    console.log('fromBalance.gte(amount) = ', fromBalance.gte(amount))
-    console.log('amount = ', amount)
-    console.log('allowance = ', allowance)
-    setAllowed(allowance.gte(amount) && fromBalance.gte(amount));
-  }, [amountToTransfer, allowance]);
+    setAllowed(
+      amount.gt(0) && allowance.gte(amount) && fromBalance.gte(amount)
+    );
+  }, [amount, allowance, fromBalance]);
 
   const handleAllowance = useCallback(async () => {
     try {
@@ -103,38 +100,37 @@ const Home: React.FC = () => {
   };
 
   const renderMenuItem = () => {
-    return filteredTokensData.map((item,index) => (
-      <MenuItem key={index} value={item.index}>{item.symbol}</MenuItem>
+    return filteredTokensData.map((item, index) => (
+      <MenuItem key={index} value={item.index}>
+        {item.symbol}
+      </MenuItem>
     ));
   };
 
   const renderTartgetMenuItem = () => {
     return filteredTargetTokensData.map((item, index) => (
-      <MenuItem key={index} value={item.index}>{item.symbol}</MenuItem>
+      <MenuItem key={index} value={item.index}>
+        {item.symbol}
+      </MenuItem>
     ));
   };
 
   const renderTransactionButton = () => {
-    console.log('requestedTransfer = ', requestedTransfer)
-    console.log('requestedAllowance = ', requestedAllowance)
-    console.log('allowed = ', allowed)
     return requestedTransfer || requestedAllowance ? (
       <KLoading progressLabel="Processing..." />
     ) : (
       <KButton
         label={allowance?.gt(0) ? "Transfer" : "Approve"}
-        disabled={requestedTransfer || requestedAllowance || allowed}
+        disabled={requestedTransfer || requestedAllowance || !allowed}
         onButtonClick={() => {
-          alert("click")
-          allowance?.gt(0) ? handleTransfer() : handleAllowance()
-        }
-        }
+          allowance?.gt(0) ? handleTransfer() : handleAllowance();
+        }}
       />
     );
   };
 
   const handleAmountChange = (amount: string) => {
-    if(amount.length>=21) return;
+    if (amount.length >= 21) return;
     setAmountToTransfer(parseInt(amount !== "" ? amount : "0"));
   };
 
@@ -145,7 +141,7 @@ const Home: React.FC = () => {
       ) : (
         <Card>
           <CardContent>
-            <CardItem >
+            <CardItem>
               {chainId && (
                 <>
                   <KTextBox

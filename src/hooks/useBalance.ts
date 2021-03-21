@@ -13,7 +13,7 @@ const useBalance = (
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
   const [loading, setLoading] = useState(false);
-  const { account } = useContext(Web3Context);
+  const { account, providerChainId } = useContext(Web3Context);
   const ethersProvider = tokenDetail
     ? getEthersProvider(tokenDetail?.chainId)
     : null;
@@ -30,7 +30,7 @@ const useBalance = (
       : null;
 
   const fetchBalance = useCallback(async () => {
-    if (fromContract && toContract) {
+    if (account && fromContract && toContract) {
       setLoading(true);
       const fromBalance = await getBalance(fromContract, account);
       const toBalance = await getBalance(toContract, account);
@@ -42,7 +42,9 @@ const useBalance = (
 
   useEffect(() => {
     fetchBalance();
-  }, [tokenDetail, targetTokenDetail, account]);
+    let refreshInterval = setInterval(fetchBalance, 100000);
+    return () => clearInterval(refreshInterval);
+  }, [tokenDetail, account, providerChainId]);
 
   return { fromBalance, toBalance, loading };
 };

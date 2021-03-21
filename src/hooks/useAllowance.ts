@@ -8,7 +8,7 @@ import { getBridgeNetworkAddress } from "../utils/helpers";
 
 const useAllowance = (selectedTokenData: TokensData) => {
   const [allowance, setAllowance] = useState(BigNumber.from(0));
-  const { account, ethersProvider } = useContext(Web3Context);
+  const { account, ethersProvider, providerChainId } = useContext(Web3Context);
   const address = selectedTokenData?.address;
   const bridgeAddress: string | null = getBridgeNetworkAddress(
     selectedTokenData
@@ -26,9 +26,9 @@ const useAllowance = (selectedTokenData: TokensData) => {
 
   useEffect(() => {
     fetchAllowance();
-    let refreshInterval = setInterval(fetchAllowance, 10000);
+    let refreshInterval = setInterval(fetchAllowance, 100000);
     return () => clearInterval(refreshInterval);
-  }, [fetchAllowance]);
+  }, [selectedTokenData, account, providerChainId]);
 
   const handleAllow = useCallback(async () => {
     if (lpContract && bridgeAddress) {
