@@ -37,7 +37,8 @@ export const getAllowance = async (
   spender: string
 ): Promise<any> => {
   try {
-    const allowance: string = await contract.allowance(owner, spender);
+    const allowance: BigNumber = await contract.allowance(owner, spender);
+
     return allowance;
   } catch (e) {
     return null;

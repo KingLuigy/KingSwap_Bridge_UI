@@ -31,6 +31,7 @@ const Home: React.FC = () => {
   const [token, setToken] = useState(filteredTokensData[0]?.index || 0);
   const [amountToTransfer, setAmountToTransfer] = useState(0);
   const [allowed, setAllowed] = useState(true);
+  const [isTouched, setIsTouched] = useState(false);
   const [requestedAllowance, setRequestedAllowance] = useState(false);
   const selectedTokenDetail = tokensData.filter((x) => x.index === token)[0];
   const targetTokenDetail = tokensData.filter(
@@ -52,12 +53,14 @@ const Home: React.FC = () => {
     account !== "" &&
     chainId &&
     [HOME_NETWORK, getBridgeNetwork(HOME_NETWORK)].indexOf(chainId) >= 0;
+  const hasAmount = amount.gt(0);
+  const isBalanceEnough = fromBalance.gte(amount);
 
   useEffect(() => {
-    setAllowed(
-      amount.gt(0) && allowance.gte(amount) && fromBalance.gte(amount)
-    );
-  }, [amount, allowance, fromBalance]);
+    const isAllowed = hasAmount && isBalanceEnough && allowance.gte(amount);
+
+    setAllowed(isAllowed);
+  }, [hasAmount, isBalanceEnough, allowance]);
 
   const handleAllowance = useCallback(async () => {
     try {
@@ -88,7 +91,14 @@ const Home: React.FC = () => {
         setRequestedTransfer(false);
       }
     }
-  }, [account, amountToTransfer, ethersProvider, token]);
+  }, [
+    account,
+    amountToTransfer,
+    ethersProvider,
+    token,
+    amount,
+    selectedTokenDetail,
+  ]);
 
   useEffect(() => {
     handleChange(filteredTokensData[0]?.index.toString());
@@ -107,7 +117,7 @@ const Home: React.FC = () => {
     ));
   };
 
-  const renderTartgetMenuItem = () => {
+  const renderTargetMenuItem = () => {
     return filteredTargetTokensData.map((item, index) => (
       <MenuItem key={index} value={item.index}>
         {item.symbol}
@@ -116,20 +126,23 @@ const Home: React.FC = () => {
   };
 
   const renderTransactionButton = () => {
+    const hasAllowance = allowance?.gt(0);
+
     return requestedTransfer || requestedAllowance ? (
       <KLoading progressLabel="Processing..." />
     ) : (
       <KButton
-        label={allowance?.gt(0) ? "Transfer" : "Approve"}
+        label={hasAllowance ? "Transfer" : "Approve"}
         disabled={requestedTransfer || requestedAllowance || !allowed}
         onButtonClick={() => {
-          allowance?.gt(0) ? handleTransfer() : handleAllowance();
+          hasAllowance ? handleTransfer() : handleAllowance();
         }}
       />
     );
   };
 
   const handleAmountChange = (amount: string) => {
+    setIsTouched(true);
     if (amount.length >= 21) return;
     setAmountToTransfer(parseInt(amount !== "" ? amount : "0"));
   };
@@ -158,6 +171,16 @@ const Home: React.FC = () => {
                     }
                   />
                   {renderTransactionButton()}
+                  {isTouched && (
+                    <div style={{ color: "red" }}>
+                      {!hasAmount && (
+                        <div>Amount must be greater than zero</div>
+                      )}
+                      {!isBalanceEnough && (
+                        <div>Insufficient funds on the balance</div>
+                      )}
+                    </div>
+                  )}
                   <KTextBox
                     label={`To ${getNetworkLabel(getBridgeNetwork(chainId))}`}
                     disabled
@@ -169,7 +192,7 @@ const Home: React.FC = () => {
                       )[0]
                       ?.targetIndex.toString()}
                     onSelectedValueChange={handleChange}
-                    renderMenuItem={renderTartgetMenuItem}
+                    renderMenuItem={renderTargetMenuItem}
                     rightLabel={
                       targetTokenDetail && !loading
                         ? formatValue(toBalance, targetTokenDetail.decimal)
