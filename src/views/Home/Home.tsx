@@ -55,9 +55,13 @@ const Home: React.FC = () => {
     [HOME_NETWORK, getBridgeNetwork(HOME_NETWORK)].indexOf(chainId) >= 0;
   const hasAmount = amount.gt(0);
   const isBalanceEnough = fromBalance.gte(amount);
+  const hasAllowance = allowance?.gt(0);
 
   useEffect(() => {
-    const isAllowed = hasAmount && isBalanceEnough && allowance.gte(amount);
+    const isAllowed =
+      hasAmount &&
+      isBalanceEnough &&
+      (hasAllowance ? allowance.gte(amount) : true);
 
     setAllowed(isAllowed);
   }, [hasAmount, isBalanceEnough, allowance]);
@@ -125,21 +129,17 @@ const Home: React.FC = () => {
     ));
   };
 
-  const renderTransactionButton = () => {
-    const hasAllowance = allowance?.gt(0);
-
-    return requestedTransfer || requestedAllowance ? (
-      <KLoading progressLabel="Processing..." />
-    ) : (
-      <KButton
-        label={hasAllowance ? "Transfer" : "Approve"}
-        disabled={requestedTransfer || requestedAllowance || !allowed}
-        onButtonClick={() => {
-          hasAllowance ? handleTransfer() : handleAllowance();
-        }}
-      />
-    );
-  };
+  const renderTransactionButton = () => requestedTransfer || requestedAllowance ? (
+    <KLoading progressLabel="Processing..." />
+  ) : (
+    <KButton
+      label={hasAllowance ? "Transfer" : "Approve"}
+      disabled={requestedTransfer || requestedAllowance || !allowed}
+      onButtonClick={() => {
+        hasAllowance ? handleTransfer() : handleAllowance();
+      }}
+    />
+  );
 
   const handleAmountChange = (amount: string) => {
     setIsTouched(true);
@@ -174,10 +174,13 @@ const Home: React.FC = () => {
                   {isTouched && (
                     <div style={{ color: "red" }}>
                       {!hasAmount && (
-                        <div>Amount must be greater than zero</div>
+                        <div>The amount must be greater than zero</div>
                       )}
                       {!isBalanceEnough && (
                         <div>Insufficient funds on the balance</div>
+                      )}
+                      {hasAllowance && allowance.lt(amount) && (
+                        <div>The amount must be no more than the allowance</div>
                       )}
                     </div>
                   )}
